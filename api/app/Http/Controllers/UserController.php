@@ -19,7 +19,8 @@ class UserController extends Controller
     }
 
     public function login(Request $request, JwtToken $jwt) {
-      if ($request->has('email') && $request->has('password')) {
+
+      if ($this->isValidLoginRequest($request)) {
         $user = User:: where("email", "=", $request->input('email'))
                       ->where("password", "=", sha1($this->salt.$request->input('password')))
                       ->first();
@@ -34,6 +35,11 @@ class UserController extends Controller
       }
     }
 
+    private function isValidLoginRequest(Request $request) {
+        $isValid = $request->has('email') && $request->has('password');
+        return $isValid;
+    }
+    
     public function signup(Request $request, JwtToken $jwt) {
       if ($request->has('username') && $request->has('password') && $request->has('email')) {
         $user = new User;
