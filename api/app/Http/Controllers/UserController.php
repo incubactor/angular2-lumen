@@ -18,9 +18,9 @@ class UserController extends Controller
         $this->salt="userloginregister";
     }
 
-    public function login(Request $request, JwtToken $jwt) {
+    public function login(Request $request, JwtToken $jwt, JsonSchema $loginSchema) {
 
-      if ($this->isValidLoginRequest($request)) {
+      if ($this->jsonSchemaValidator->isValid($request, $loginSchema)) {
         $user = User:: where("email", "=", $request->input('email'))
                       ->where("password", "=", sha1($this->salt.$request->input('password')))
                       ->first();
@@ -39,7 +39,7 @@ class UserController extends Controller
         $isValid = $request->has('email') && $request->has('password');
         return $isValid;
     }
-    
+
     public function signup(Request $request, JwtToken $jwt) {
       if ($request->has('username') && $request->has('password') && $request->has('email')) {
         $user = new User;
